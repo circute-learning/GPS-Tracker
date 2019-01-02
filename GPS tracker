@@ -1,0 +1,67 @@
+#include "Adafruit_FONA.h"
+#include <SoftwareSerial.h>
+
+// standard pins for the shield, adjust as necessary
+#define FONA_RX 3
+#define FONA_TX 4
+#define FONA_RST 5
+
+
+SoftwareSerial fonaSS = SoftwareSerial(FONA_TX, FONA_RX);
+SoftwareSerial *fonaSerial = &fonaSS;
+Adafruit_FONA fona = Adafruit_FONA(FONA_RST);
+
+void setup() {
+ //check the status of FONA
+  while (! Serial);
+  Serial.begin(115200);
+
+  fonaSerial->begin(4800);
+  if (! fona.begin(*fonaSerial)) {
+    Serial.println(F("Couldn't find FONA"));
+    while(1);
+  }
+  Serial.println(F("FONA is OK"));
+  //ending check
+  
+  Serial.println(F("Enabling GPS..."));
+  fona.enableGPS(true);   //enable GPS
+
+}
+
+void loop() {
+  
+  float latitude, longitude, altitude;
+
+  boolean success = fona.getGPS(&latitude, &longitude, &altitude);
+
+  if (success) {
+    Serial.print("GPS lat:");
+    Serial.println(latitude, 6);
+    Serial.print("GPS long:");
+    Serial.println(longitude, 6);
+
+
+   /* 
+    //if you want to send the location in SMS message, use the following code
+    char message[264];
+    char LAT[20];
+    char LONG[20];  
+    dtostrf(latitude, 0, 8,LAT);         //convert the float numbers to string
+    dtostrf(longitude, 0, 8,LONG);       
+               
+    //store the coordinates of the location in message and show it in google map 
+      sprintf(message, "lat: %s \n lon: %s\n""https://maps.google.com/?q=""%s,%s",LAT,LONG,LAT,LONG);  
+      Serial.println(message) ; 
+      if (fona.sendSMS("+############", message))     //replace the hashtags to the Recipient number  
+      {           
+      Serial.println(F("Location & time Sent!"));
+      } else  {
+        Serial.println(F("failed!"));
+    
+  } 
+
+  */
+  }
+
+}
