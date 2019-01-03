@@ -6,6 +6,8 @@
 #define FONA_TX 4
 #define FONA_RST 5
 
+float latitude, longitude, altitude;
+boolean success; 
 
 SoftwareSerial fonaSS = SoftwareSerial(FONA_TX, FONA_RX);
 SoftwareSerial *fonaSerial = &fonaSS;
@@ -22,28 +24,36 @@ void setup() {
     while(1);
   }
   Serial.println(F("FONA is OK"));
-  //ending check
+  //end check
   
   Serial.println(F("Enabling GPS..."));
   fona.enableGPS(true);   //enable GPS
 
-}
-
-void loop() {
-  
-  float latitude, longitude, altitude;
-
-  boolean success = fona.getGPS(&latitude, &longitude, &altitude);
-
-  if (success) {
+ //start to get the coordinates of the location  
+ while(!success){
+  success = fona.getGPS(&latitude, &longitude, &altitude);
     Serial.print("GPS lat:");
     Serial.println(latitude, 6);
     Serial.print("GPS long:");
     Serial.println(longitude, 6);
+     }
 
+  //send the coordinates of the location in SMS message
+  /*   
+  if (success){
+  sendSMS();
+  }*/
 
-   /* 
-    //if you want to send the location in SMS message, use the following code
+}
+
+void loop() {
+
+}
+
+//if you want to send the coordinates of location in SMS message, use the following code
+/*
+void sendSMS(){
+   
     char message[264];
     char LAT[20];
     char LONG[20];  
@@ -61,7 +71,4 @@ void loop() {
     
   } 
 
-  */
-  }
-
-}
+}*/
